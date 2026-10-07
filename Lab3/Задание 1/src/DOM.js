@@ -4,9 +4,15 @@
   Необходимо, чтобы функция осуществила вставку на страницу указанный тег с указанным содержимым указанное число раз.
   Считаем, что всегда передается тег, допускающий вставку текста в качестве своего содержимого (P, DIV, I и пр.).
 */
-export function appendToBody(tag, content, count) {
+export function appendToBody(tag, content, count) 
+{
+  for (let i = 0; i < count; i++) 
+  {
+    const element = document.createElement(tag);
+    element.textContent = content;
+    document.body.appendChild(element);
+  }
 }
-
 /*
   Создайте дерево вложенных тегов DIV.
   Каждый узел дерева должен содержать childrenCount узлов.
@@ -14,7 +20,31 @@ export function appendToBody(tag, content, count) {
   Каждый элемент должен иметь класс вида item_n, где n - глубина вложенности элемента. (Нумерацию ведем с единицы).
   Сформированное дерево верните в качестве результата работы функции.
 */
-export function generateTree(childrenCount, level) {
+export function generateTree(childrenCount, level) 
+{
+  function createBranch(currentLevel) 
+  {
+    if (currentLevel > level) 
+    {
+      return null;
+    }
+
+    let div = document.createElement('div');
+    div.className = 'item_' + currentLevel;
+
+    for (let i = 0; i < childrenCount; i++) 
+    {
+      let child = createBranch(currentLevel + 1);
+      if (child) 
+      {
+        div.appendChild(child);
+      }
+    }
+
+    return div;
+  }
+
+  return createBranch(1);
 }
 
 /*
@@ -25,5 +55,21 @@ export function generateTree(childrenCount, level) {
   которые находились внутри переписанных тегов.
   Сформированное дерево верните в качестве результата работы функции.
 */
-export function replaceNodes() {
+export function replaceNodes() 
+{
+  let tree = generateTree(2, 3);
+  let items2 = tree.querySelectorAll('.item_2');
+
+  for (let i = 0; i < items2.length; i++) 
+  {
+    let oldElem = items2[i];
+    let section = document.createElement('section');
+
+    section.className = oldElem.className;
+    section.innerHTML = oldElem.innerHTML;
+
+    oldElem.replaceWith(section);
+  }
+
+  return tree;
 }
